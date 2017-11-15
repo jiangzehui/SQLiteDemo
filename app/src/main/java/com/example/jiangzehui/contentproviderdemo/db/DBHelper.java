@@ -9,20 +9,24 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class DBHelper extends SQLiteOpenHelper {
-
+    public final String TABLE_NAME = "student"; //表名
+    private static final String DATABASE_NAME = "test.db";//库名
 
     public DBHelper(Context context) {
-        super(context, "test.db", null, 1);
+        super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String sql = "create table student (id integer primary key autoincrement,name varchar(15),age integer) ";
+        String sql = "create table " + TABLE_NAME + " (id integer primary key autoincrement,name varchar(15),age integer) ";
         sqLiteDatabase.execSQL(sql);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    //数据库版本或表结构改变会被调用
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        onCreate(db);
     }
 }

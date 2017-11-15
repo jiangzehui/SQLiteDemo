@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<JSONObject> list;
     MyAdapter adapter;
     Random random;
+    TextView tvTotal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
         random= new Random();
         list =  DBService.getInstence(this).search();
         ListView lv = (ListView) findViewById(R.id.lv);
+        tvTotal = (TextView) findViewById(R.id.tvTotal);
+        tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
         adapter = new MyAdapter();
         lv.setAdapter(adapter);
         findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
@@ -39,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
                 values.put("name","jiangzehui"+random.nextInt(100));
                 values.put("age",20+random.nextInt(10));
                 if(DBService.getInstence(MainActivity.this).save(values)){
-                    Toast.makeText(MainActivity.this,"添加成功",Toast.LENGTH_SHORT).show();
                     list =  DBService.getInstence(MainActivity.this).search();
                     adapter.notifyDataSetChanged();
+                    tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
                 }else{
                     Toast.makeText(MainActivity.this,"添加失败",Toast.LENGTH_SHORT).show();
                 }
@@ -54,8 +58,61 @@ public class MainActivity extends AppCompatActivity {
                 DBService.getInstence(MainActivity.this).deleteAll();
                 list =  DBService.getInstence(MainActivity.this).search();
                 adapter.notifyDataSetChanged();
+                tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
             }
         });
+        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                try {
+                    if(DBService.getInstence(MainActivity.this).delete(list.get(position).getInt("id"))){
+                        list =  DBService.getInstence(MainActivity.this).search();
+                        adapter.notifyDataSetChanged();
+                        tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
+                    }else{
+                        Toast.makeText(MainActivity.this,"删除失败",Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            }
+        });
+
+
+        //contentProvider操作方式
+        findViewById(R.id.btnAdd2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ContentValues values = new ContentValues();
+                values.put("name","jiangzehui"+random.nextInt(100));
+                values.put("age",20+random.nextInt(10));
+                //getContentResolver().insert()
+                if(DBService.getInstence(MainActivity.this).save(values)){
+                    list =  DBService.getInstence(MainActivity.this).search();
+                    adapter.notifyDataSetChanged();
+                    tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
+                }else{
+                    Toast.makeText(MainActivity.this,"添加失败",Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        findViewById(R.id.btnDel2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DBService.getInstence(MainActivity.this).deleteAll();
+                list =  DBService.getInstence(MainActivity.this).search();
+                adapter.notifyDataSetChanged();
+                tvTotal.setText("记录条数："+DBService.getInstence(MainActivity.this).getCount()+"");
+            }
+        });
+
+
+
+
+
+
     }
 
 

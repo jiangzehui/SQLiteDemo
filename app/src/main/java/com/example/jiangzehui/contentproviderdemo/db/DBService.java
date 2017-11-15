@@ -18,7 +18,7 @@ public class DBService {
 
     private static DBService mInstence;
     private DBHelper helper;
-    private final String TABLE_NAME = "student";
+    private String TABLE_NAME;
 
     /**
      * 查询
@@ -105,6 +105,13 @@ public class DBService {
         }
     }
 
+    //对数据库表数据的统计操作
+    public long getCount() {
+        Cursor cursor = helper.getReadableDatabase().rawQuery("select count(*) from " + TABLE_NAME, null);
+        cursor.moveToFirst();
+        return cursor.getLong(0);
+    }
+
 
     public static DBService getInstence(Context context) {
         if (mInstence == null) {
@@ -120,6 +127,7 @@ public class DBService {
     public DBService(Context context) {
         close();
         helper = new DBHelper(context);
+        TABLE_NAME = helper.TABLE_NAME;
     }
 
 
@@ -129,7 +137,6 @@ public class DBService {
             helper = null;
         }
     }
-
 
 
 }
