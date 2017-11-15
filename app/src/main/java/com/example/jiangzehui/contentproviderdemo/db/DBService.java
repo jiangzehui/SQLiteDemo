@@ -1,4 +1,4 @@
-package com.example.jiangzehui.contentproviderdemo;
+package com.example.jiangzehui.contentproviderdemo.db;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class DBService {
 
     private static DBService mInstence;
-    private Helper helper;
+    private DBHelper helper;
     private final String TABLE_NAME = "student";
 
     /**
@@ -25,7 +25,7 @@ public class DBService {
      *
      * @return
      */
-    protected ArrayList<JSONObject> search() {
+    public ArrayList<JSONObject> search() {
         ArrayList<JSONObject> list = new ArrayList<>();
         Cursor cursor = helper.getReadableDatabase().query(TABLE_NAME, null, null, null, null, null, null, null);
         while (cursor.moveToNext()) {
@@ -54,7 +54,7 @@ public class DBService {
      * @param contentValues
      * @return
      */
-    protected boolean save(ContentValues contentValues) {
+    public boolean save(ContentValues contentValues) {
         long result = helper.getWritableDatabase().insert(TABLE_NAME, null, contentValues);
         if (result > 0) {
             return true;
@@ -71,7 +71,7 @@ public class DBService {
      * @param contentValues
      * @return
      */
-    protected boolean update(Object id, ContentValues contentValues) {
+    public boolean update(Object id, ContentValues contentValues) {
         long result = helper.getWritableDatabase().update(TABLE_NAME, contentValues, "id=?", new String[]{id + ""});
         if (result > 0) {
             return true;
@@ -87,7 +87,7 @@ public class DBService {
      * @param id
      * @return
      */
-    protected boolean delete(Object id) {
+    public boolean delete(Object id) {
         long result = helper.getWritableDatabase().delete(TABLE_NAME, "id=?", new String[]{id + ""});
         if (result > 0) {
             return true;
@@ -95,6 +95,16 @@ public class DBService {
             return false;
         }
     }
+
+    public boolean deleteAll() {
+        long result = helper.getWritableDatabase().delete(TABLE_NAME, null, null);
+        if (result > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     public static DBService getInstence(Context context) {
         if (mInstence == null) {
@@ -109,7 +119,7 @@ public class DBService {
 
     public DBService(Context context) {
         close();
-        helper = new Helper(context);
+        helper = new DBHelper(context);
     }
 
 

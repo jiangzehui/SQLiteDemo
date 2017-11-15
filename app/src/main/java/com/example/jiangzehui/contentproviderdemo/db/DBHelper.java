@@ -1,4 +1,4 @@
-package com.example.jiangzehui.contentproviderdemo;
+package com.example.jiangzehui.contentproviderdemo.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,10 +8,10 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by jiangzehui on 17/11/14.
  */
 
-public class Helper extends SQLiteOpenHelper {
+public class DBHelper extends SQLiteOpenHelper {
 
 
-    public Helper(Context context) {
+    public DBHelper(Context context) {
         super(context, "test.db", null, 1);
     }
 
