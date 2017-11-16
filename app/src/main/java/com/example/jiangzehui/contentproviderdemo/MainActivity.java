@@ -1,8 +1,10 @@
 package com.example.jiangzehui.contentproviderdemo;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,18 +69,39 @@ public class MainActivity extends AppCompatActivity {
         });
         lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    if (DBService.getInstence(MainActivity.this).delete(list.get(position).getInt("id"))) {
-                        list = DBService.getInstence(MainActivity.this).search();
-                        adapter.notifyDataSetChanged();
-                        tvTotal.setText("记录条数：" + DBService.getInstence(MainActivity.this).getCount() + "");
-                    } else {
-                        Toast.makeText(MainActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                new AlertDialog.Builder(MainActivity.this).setTitle("删除").setItems(new String[]{"sqlite方式删除", "provider方式删除", "取消"}, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                try {
+                                    if (DBService.getInstence(MainActivity.this).delete(list.get(position).getInt("id"))) {
+                                        list = DBService.getInstence(MainActivity.this).search();
+                                        adapter.notifyDataSetChanged();
+                                        tvTotal.setText("记录条数：" + DBService.getInstence(MainActivity.this).getCount() + "");
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "删除失败", Toast.LENGTH_SHORT).show();
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 1:
+                                try {
+                                    int id = list.get(position).getInt("id");
+                                    getContentResolver().delete(Uri.parse(MyContentProvider.URI_ITEM),"id=?",new String[]{id+""});
+                                    list = DBService.getInstence(MainActivity.this).search();
+                                    adapter.notifyDataSetChanged();
+                                    tvTotal.setText("记录条数：" + DBService.getInstence(MainActivity.this).getCount() + "");
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                        }
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                }).show();
                 return true;
             }
         });
