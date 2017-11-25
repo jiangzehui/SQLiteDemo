@@ -20,6 +20,7 @@
 
         <provider
             android:authorities="com.example.jiangzehui.contentproviderdemo.MyContentProvider"
+            android:exported="true"
             android:name=".MyContentProvider"/>
     </application>
 

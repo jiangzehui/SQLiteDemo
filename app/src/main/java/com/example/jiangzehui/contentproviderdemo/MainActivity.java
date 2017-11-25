@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                             case 1:
                                 try {
                                     int id = list.get(position).getInt("id");
-                                    getContentResolver().delete(Uri.parse(MyContentProvider.URI_ITEM),"id=?",new String[]{id+""});
+                                    getContentResolver().delete(Uri.parse(MyContentProvider.URI_ITEM+id),null,null);
                                     list = DBService.getInstence(MainActivity.this).search();
                                     adapter.notifyDataSetChanged();
                                     tvTotal.setText("记录条数：" + DBService.getInstence(MainActivity.this).getCount() + "");

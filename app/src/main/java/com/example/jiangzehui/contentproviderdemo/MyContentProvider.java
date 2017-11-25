@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.example.jiangzehui.contentproviderdemo.db.DBHelper;
 
@@ -25,7 +26,7 @@ public class MyContentProvider extends ContentProvider {
     //authorities
     private static String AUTHORITIES = "com.example.jiangzehui.contentproviderdemo.MyContentProvider";
     public static String URI_ALL = "content://"+AUTHORITIES+"/"+TABLE_NAME;
-    public static String URI_ITEM = "content://"+AUTHORITIES+"/"+TABLE_NAME+ "/#";
+    public static String URI_ITEM = "content://"+AUTHORITIES+"/"+TABLE_NAME+"/";
 
 
     @Override
@@ -55,7 +56,9 @@ public class MyContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        switch (uriMatcher.match(uri)) {
+        int i = uriMatcher.match(uri);
+
+        switch (i) {
             case ALL:
                 return helper.getReadableDatabase().query(TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
             case ITEM:
@@ -86,12 +89,14 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        int i = uriMatcher.match(uri);
 
-        switch (uriMatcher.match(uri)) {
+        switch (i) {
             case ALL:
                 return helper.getWritableDatabase().delete(TABLE_NAME, null, null);
             case ITEM:
-                return helper.getWritableDatabase().delete(TABLE_NAME, selection, selectionArgs);
+                long id = ContentUris.parseId(uri);
+                return helper.getWritableDatabase().delete(TABLE_NAME, "id=?",new String[]{id+""});
             default:
                 throw new IllegalArgumentException("Unknow Uri:" + uri.toString());
         }
